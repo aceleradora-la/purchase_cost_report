@@ -112,7 +112,7 @@ class PurchaseCostReport(models.AbstractModel):
                     "description": pol.name,
                     "ordered_qty": pol.product_qty,
                     "received_qty": received_qty,
-                    "uom": pol.product_uom,
+                    "uom": pol.product_uom_id,
                     "product_unit_cost": product_unit_cost,
                     "product_total_cost": product_total_cost,
                     "lc_lines": lc_lines,
