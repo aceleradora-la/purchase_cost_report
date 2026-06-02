@@ -10,6 +10,7 @@
         "stock_landed_costs",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "report/purchase_cost_report_template.xml",
         "views/purchase_cost_report_wizard_views.xml",
         "views/purchase_order_views.xml",
