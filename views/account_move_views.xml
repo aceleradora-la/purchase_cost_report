@@ -14,7 +14,7 @@
                     class="oe_stat_button"
                     icon="fa-file-text-o"
                     string="Valuación OC"
-                    invisible="move_type not in ('in_invoice', 'in_refund')"
+                    invisible="not purchase_cost_show_button"
                     title="Reporte de valuación en moneda de compra"
                 />
             </xpath>

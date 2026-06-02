@@ -14,7 +14,7 @@
                     class="oe_stat_button"
                     icon="fa-file-text-o"
                     string="Valuación"
-                    invisible="state not in ('purchase', 'done')"
+                    invisible="not purchase_cost_show_button"
                     title="Reporte de valuación en moneda de compra"
                 />
             </xpath>

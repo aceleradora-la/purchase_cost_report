@@ -1,9 +1,31 @@
-from odoo import models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    purchase_cost_show_button = fields.Boolean(
+        compute="_compute_purchase_cost_show_button",
+        help="Verdadero si la factura es de proveedor, tiene OC con productos "
+             "almacenables y Costos en Destino está instalado.",
+    )
+
+    @api.depends(
+        "move_type",
+        "invoice_line_ids.purchase_line_id",
+        "invoice_line_ids.purchase_line_id.product_id.detailed_type",
+    )
+    def _compute_purchase_cost_show_button(self):
+        for move in self:
+            if move.move_type not in ("in_invoice", "in_refund"):
+                move.purchase_cost_show_button = False
+                continue
+            move.purchase_cost_show_button = any(
+                line.purchase_line_id.product_id.detailed_type == "product"
+                for line in move.invoice_line_ids
+                if line.purchase_line_id
+            )
 
     def action_print_purchase_cost_report(self):
         """Abre el wizard de valuación partiendo desde la factura de proveedor."""
@@ -13,7 +35,6 @@ class AccountMove(models.Model):
             raise UserError(
                 _("Esta factura no tiene líneas vinculadas a una Orden de Compra.")
             )
-        # Si hay múltiples OC, abre la primera; el wizard queda vinculado a una sola OC
         order = pos[:1]
         wizard = self.env["purchase.cost.report.wizard"].create({"order_id": order.id})
         return {
