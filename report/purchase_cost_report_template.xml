@@ -152,6 +152,9 @@
                                                 <td colspan="6" class="text-end text-muted ps-4">
                                                     <span style="padding-left: 2em;">
                                                         📦 <t t-esc="lc['name']"/>
+                                                        <t t-if="lc['vendor_bill'] and lc['vendor_bill'].name">
+                                                            — <em><t t-esc="lc['vendor_bill'].name"/></em>
+                                                        </t>
                                                         — fecha: <t t-esc="lc['date']" t-options='{"widget": "date"}'/>
                                                         <t t-if="lc['ref_currency'].id != currency.id">
                                                             &amp;nbsp;

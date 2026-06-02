@@ -101,6 +101,8 @@ class PurchaseCostReport(models.AbstractModel):
                 lc_lines.append(
                     {
                         "name": lc.name,
+                        "landed_cost": lc,                   # ORM record → usado en wizard
+                        "vendor_bill": lc.vendor_bill_id,    # ORM record → usado en wizard y PDF
                         "date": lc_date,
                         "ref_currency": lc_ref_currency,
                         "amount_ref": amount_ref,

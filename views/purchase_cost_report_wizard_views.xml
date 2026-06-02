@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Vista form del wizard ─────────────────────────────────────── -->
+    <record id="view_purchase_cost_report_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.cost.report.wizard.form</field>
+        <field name="model">purchase.cost.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Valuación en Moneda de Compra">
+
+                <!-- Encabezado con datos de la OC -->
+                <div class="o_horizontal_separator mb-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <field name="order_id" readonly="1" nolabel="1"
+                                   options="{'no_open': False}"
+                                   class="fs-4 fw-bold text-primary"/>
+                        </div>
+                        <div class="col-6 text-end text-muted">
+                            Moneda:
+                            <strong>
+                                <field name="currency_id" readonly="1" nolabel="1" class="d-inline"/>
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                <notebook>
+
+                    <!-- ── Tab 1: Resumen por Producto ──────────────────── -->
+                    <page string="Resumen por Producto" name="products">
+                        <field name="product_line_ids" readonly="1" nolabel="1">
+                            <list
+                                decoration-muted="lc_total == 0"
+                                string="Productos recibidos">
+                                <field name="currency_id" column_invisible="1"/>
+                                <field name="product_id" string="Producto"/>
+                                <field name="ordered_qty" string="Ord."/>
+                                <field name="received_qty" string="Rec."/>
+                                <field name="uom_id" string="UdM"/>
+                                <field name="product_unit_cost"
+                                       string="Costo Unit. Prov."
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="product_total_cost"
+                                       string="Total Prov."
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="lc_total"
+                                       string="Costos Destino"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="unit_cost"
+                                       string="Costo Unit. Total"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="fw-bold"/>
+                                <field name="total_cost"
+                                       string="Costo Total"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="fw-bold"/>
+                            </list>
+                        </field>
+                    </page>
+
+                    <!-- ── Tab 2: Detalle Costos en Destino ─────────────── -->
+                    <page string="Costos en Destino" name="lc_details">
+                        <field name="lc_line_ids" readonly="1" nolabel="1">
+                            <list string="Detalle de Costos en Destino">
+                                <field name="currency_id" column_invisible="1"/>
+                                <field name="ref_currency_id" column_invisible="1"/>
+                                <field name="product_id" string="Producto"/>
+                                <field name="landed_cost_id"
+                                       string="Costo en Destino"
+                                       options="{'no_create': True}"/>
+                                <field name="vendor_bill_id"
+                                       string="Factura"
+                                       options="{'no_create': True}"/>
+                                <field name="date" string="Fecha"/>
+                                <field name="amount_ref"
+                                       string="Monto Origen"
+                                       widget="monetary"
+                                       options="{'currency_field': 'ref_currency_id'}"/>
+                                <field name="ref_currency_id"
+                                       string="Mon. Orig."
+                                       optional="show"/>
+                                <field name="amount_po"
+                                       string="Monto OC"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="fw-bold"/>
+                            </list>
+                        </field>
+                        <div class="text-muted mt-2" style="font-size: 12px;">
+                            Los montos OC se calculan usando el TC de la moneda de la OC
+                            a la fecha de la factura del costo en destino.
+                        </div>
+                    </page>
+
+                </notebook>
+
+                <!-- Botones de acción -->
+                <footer>
+                    <button name="action_print_pdf"
+                            type="object"
+                            string="Imprimir PDF"
+                            class="btn-primary"
+                            icon="fa-print"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+</odoo>
