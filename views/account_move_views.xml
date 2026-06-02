@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_move_form_cost_report_button" model="ir.ui.view">
+        <field name="name">account.move.form.purchase.cost.report</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Botón en la barra de estado de la factura de proveedor -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_print_purchase_cost_report"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    string="Valuación OC"
+                    attrs="{'invisible': [('move_type', 'not in', ['in_invoice', 'in_refund'])]}"
+                    title="Reporte de valuación en moneda de compra"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

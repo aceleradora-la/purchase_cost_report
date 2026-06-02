@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Acción del reporte ──────────────────────────────────────── -->
+    <record id="action_report_purchase_cost" model="ir.actions.report">
+        <field name="name">Valuación en Moneda de Compra</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_cost_report.report_purchase_cost</field>
+        <field name="report_file">purchase_cost_report.report_purchase_cost</field>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- ── Template del reporte ───────────────────────────────────── -->
+    <template id="report_purchase_cost">
+        <t t-call="web.html_container">
+            <t t-foreach="report_data" t-as="data">
+                <t t-set="order" t-value="data['order']"/>
+                <t t-set="currency" t-value="data['currency']"/>
+                <t t-call="web.external_layout">
+
+                    <div class="page">
+
+                        <!-- Encabezado -->
+                        <div class="row mb-4">
+                            <div class="col-7">
+                                <h2 class="mb-1">
+                                    Valuación en Moneda de Compra
+                                </h2>
+                                <h3 class="text-muted">
+                                    <t t-esc="order.name"/>
+                                </h3>
+                            </div>
+                            <div class="col-5 text-end">
+                                <table class="table table-sm table-borderless mb-0" style="font-size: 13px;">
+                                    <tr>
+                                        <th class="text-end text-muted">Proveedor:</th>
+                                        <td><t t-esc="order.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">Fecha OC:</th>
+                                        <td><t t-esc="order.date_order" t-options='{"widget": "date"}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">Moneda:</th>
+                                        <td>
+                                            <strong>
+                                                <t t-esc="currency.name"/>
+                                                (<t t-esc="currency.symbol"/>)
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">Empresa:</th>
+                                        <td><t t-esc="order.company_id.name"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Sin líneas -->
+                        <t t-if="not data['lines']">
+                            <div class="alert alert-warning">
+                                No hay productos recibidos para esta orden de compra.
+                            </div>
+                        </t>
+
+                        <!-- Tabla de productos -->
+                        <t t-if="data['lines']">
+                            <table class="table table-sm o_main_table" style="font-size: 12px;">
+                                <thead>
+                                    <tr style="background-color: #f0f0f0;">
+                                        <th style="width: 28%">Producto</th>
+                                        <th class="text-end" style="width: 7%">Cant.<br/>Ord.</th>
+                                        <th class="text-end" style="width: 7%">Cant.<br/>Rec.</th>
+                                        <th style="width: 5%">UdM</th>
+                                        <th class="text-end" style="width: 10%">
+                                            Costo Unit.<br/>Proveedor
+                                            <br/><small class="text-muted"><t t-esc="currency.name"/></small>
+                                        </th>
+                                        <th class="text-end" style="width: 11%">
+                                            Costo Total<br/>Proveedor
+                                            <br/><small class="text-muted"><t t-esc="currency.name"/></small>
+                                        </th>
+                                        <th class="text-end" style="width: 11%">
+                                            Costos en<br/>Destino
+                                            <br/><small class="text-muted"><t t-esc="currency.name"/></small>
+                                        </th>
+                                        <th class="text-end" style="width: 11%">
+                                            Costo Unit.<br/>Total
+                                            <br/><small class="text-muted"><t t-esc="currency.name"/></small>
+                                        </th>
+                                        <th class="text-end" style="width: 10%">
+                                            Costo<br/>Total
+                                            <br/><small class="text-muted"><t t-esc="currency.name"/></small>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data['lines']" t-as="line">
+
+                                        <!-- Fila principal del producto -->
+                                        <tr>
+                                            <td>
+                                                <strong><t t-esc="line['product'].display_name"/></strong>
+                                                <t t-if="line['description'] != line['product'].display_name">
+                                                    <br/><small class="text-muted"><t t-esc="line['description']"/></small>
+                                                </t>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="'%.3f' % line['ordered_qty']"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="'%.3f' % line['received_qty']"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="line['uom'].name"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="formatLang(line['product_unit_cost'], currency_obj=currency)"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-esc="formatLang(line['product_total_cost'], currency_obj=currency)"/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-if="line['lc_total']">
+                                                    <strong>
+                                                        <t t-esc="formatLang(line['lc_total'], currency_obj=currency)"/>
+                                                    </strong>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="text-muted">—</span>
+                                                </t>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>
+                                                    <t t-esc="formatLang(line['unit_cost'], currency_obj=currency)"/>
+                                                </strong>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>
+                                                    <t t-esc="formatLang(line['total_cost'], currency_obj=currency)"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Detalle de costos en destino (sub-filas) -->
+                                        <t t-foreach="line['lc_lines']" t-as="lc">
+                                            <tr style="background-color: #fafafa; font-size: 11px;">
+                                                <td colspan="6" class="text-end text-muted ps-4">
+                                                    <span style="padding-left: 2em;">
+                                                        📦 <t t-esc="lc['name']"/>
+                                                        — fecha: <t t-esc="lc['date']" t-options='{"widget": "date"}'/>
+                                                        <t t-if="lc['ref_currency'].id != currency.id">
+                                                            &amp;nbsp;
+                                                            (<t t-esc="formatLang(lc['amount_ref'], currency_obj=lc['ref_currency'])"/>
+                                                            → <t t-esc="lc['ref_currency'].name"/>/<t t-esc="currency.name"/>)
+                                                        </t>
+                                                    </span>
+                                                </td>
+                                                <td class="text-end text-muted">
+                                                    <t t-esc="formatLang(lc['amount_po'], currency_obj=currency)"/>
+                                                </td>
+                                                <td colspan="2"/>
+                                            </tr>
+                                        </t>
+
+                                    </t>
+                                </tbody>
+
+                                <!-- Totales -->
+                                <tfoot>
+                                    <tr style="background-color: #e8e8e8; font-weight: bold;">
+                                        <td colspan="5" class="text-end">TOTALES</td>
+                                        <td class="text-end">
+                                            <t t-esc="formatLang(data['total_product'], currency_obj=currency)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatLang(data['total_lc'], currency_obj=currency)"/>
+                                        </td>
+                                        <td/>
+                                        <td class="text-end">
+                                            <t t-esc="formatLang(data['total_all'], currency_obj=currency)"/>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- Nota al pie -->
+                        <div class="mt-3" style="font-size: 11px; color: #666;">
+                            <p>
+                                <strong>Nota:</strong>
+                                Los costos en destino se convierten a
+                                <t t-esc="currency.name"/>
+                                usando el tipo de cambio vigente a la fecha del comprobante del costo en destino.
+                                Para costos cuya factura es en la misma moneda que la OC, no se aplica conversión.
+                            </p>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
