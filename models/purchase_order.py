@@ -10,13 +10,13 @@ class PurchaseOrder(models.Model):
              "Costos en Destino está instalado.",
     )
 
-    @api.depends("order_line.product_id", "order_line.product_id.detailed_type")
+    @api.depends("order_line.product_id", "order_line.product_id.is_storable")
     def _compute_purchase_cost_show_button(self):
         for order in self:
             order.purchase_cost_show_button = (
                 order.state in ("purchase", "done")
                 and any(
-                    line.product_id.detailed_type == "product"
+                    line.product_id.is_storable
                     for line in order.order_line
                     if line.product_id
                 )

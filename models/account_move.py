@@ -14,7 +14,7 @@ class AccountMove(models.Model):
     @api.depends(
         "move_type",
         "invoice_line_ids.purchase_line_id",
-        "invoice_line_ids.purchase_line_id.product_id.detailed_type",
+        "invoice_line_ids.purchase_line_id.product_id.is_storable",
     )
     def _compute_purchase_cost_show_button(self):
         for move in self:
@@ -22,7 +22,7 @@ class AccountMove(models.Model):
                 move.purchase_cost_show_button = False
                 continue
             move.purchase_cost_show_button = any(
-                line.purchase_line_id.product_id.detailed_type == "product"
+                line.purchase_line_id.product_id.is_storable
                 for line in move.invoice_line_ids
                 if line.purchase_line_id
             )
