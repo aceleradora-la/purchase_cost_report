@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from odoo.tools.float_utils import float_is_zero
+from odoo.tools.misc import formatLang as _formatLang
 
 
 class PurchaseCostReport(models.AbstractModel):
@@ -20,9 +21,14 @@ class PurchaseCostReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         orders = self.env["purchase.order"].browse(docids)
         report_data = [self._prepare_order_data(order) for order in orders]
+        env = self.env
         return {
             "docs": orders,
             "report_data": report_data,
+            # formatLang ya no se inyecta automáticamente en Odoo 19
+            "formatLang": lambda value, digits=None, currency_obj=None: _formatLang(
+                env, value, digits=digits, currency_obj=currency_obj
+            ),
         }
 
     def _prepare_order_data(self, order):
