@@ -3,8 +3,8 @@
     "version": "19.0.1.0.0",
     "category": "Purchase",
     "summary": "Reporte de valuación de recepciones en moneda de la orden de compra, incluyendo costos en destino convertidos al TC de la fecha del costo.",
-    "author": "ADHOC SA",
-    "website": "www.adhoc.com.ar",
+    "author": "Aceleradora LA",
+    "website": "https://aceleradora.la",
     "depends": [
         "purchase_stock",
         "stock_landed_costs",
