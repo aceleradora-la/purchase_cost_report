@@ -188,7 +188,7 @@ class PurchaseCostReportWizardLCSummary(models.TransientModel):
         help="Monto en la moneda original de la factura del costo en destino."
     )
     exchange_rate = fields.Float(
-        "Tipo de Cambio", digits=(16, 4), readonly=True,
+        "Tipo de Cambio", digits=(16, 2), readonly=True,
         help="1 unidad de moneda OC = X unidades de moneda origen."
     )
     amount_po = fields.Monetary(

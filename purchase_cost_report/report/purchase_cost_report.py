@@ -80,14 +80,12 @@ class PurchaseCostReport(models.AbstractModel):
                 if float_is_zero(amount_company, precision_rounding=company_currency.rounding):
                     continue
 
-                # Fecha y moneda de referencia para el TC
-                lc_date, lc_ref_currency, amount_ref = self._get_lc_amount_in_ref_currency(
-                    lc, amount_company, company_currency
+                # Fecha, moneda, monto y TC exacto del sistema
+                lc_date, lc_ref_currency, amount_ref, lc_tc = self._get_lc_amount_in_ref_currency(
+                    lc, amount_company, company_currency, po_currency, company
                 )
 
                 if same_currency or lc_ref_currency == po_currency:
-                    # Si la moneda del comprobante ya es la moneda de la OC,
-                    # se usa directamente sin conversión
                     amount_po = amount_ref
                 else:
                     amount_po = lc_ref_currency._convert(
@@ -101,12 +99,13 @@ class PurchaseCostReport(models.AbstractModel):
                 lc_lines.append(
                     {
                         "name": lc.name,
-                        "landed_cost": lc,                   # ORM record → usado en wizard
-                        "vendor_bill": lc.vendor_bill_id,    # ORM record → usado en wizard y PDF
+                        "landed_cost": lc,
+                        "vendor_bill": lc.vendor_bill_id,
                         "date": lc_date,
                         "ref_currency": lc_ref_currency,
                         "amount_ref": amount_ref,
                         "amount_po": amount_po,
+                        "exchange_rate": lc_tc,   # TC exacto, sin errores de redondeo
                     }
                 )
 
@@ -149,19 +148,11 @@ class PurchaseCostReport(models.AbstractModel):
                         "ref_currency": lc["ref_currency"],
                         "amount_ref": 0.0,
                         "amount_po": 0.0,
+                        # TC exacto del primer registro (todos los del mismo LC tienen el mismo)
+                        "exchange_rate": lc["exchange_rate"],
                     }
                 lc_summary_dict[key]["amount_ref"] += lc["amount_ref"]
                 lc_summary_dict[key]["amount_po"] += lc["amount_po"]
-
-        # TC: 1 {po_currency} = X {ref_currency}
-        for lcs in lc_summary_dict.values():
-            if (
-                lcs["ref_currency"] != po_currency
-                and not float_is_zero(lcs["amount_po"], precision_rounding=po_currency.rounding)
-            ):
-                lcs["exchange_rate"] = lcs["amount_ref"] / lcs["amount_po"]
-            else:
-                lcs["exchange_rate"] = 0.0
 
         lc_summary = sorted(lc_summary_dict.values(), key=lambda x: x["date"] or "")
 
@@ -176,34 +167,43 @@ class PurchaseCostReport(models.AbstractModel):
             "lc_summary": lc_summary,
         }
 
-    def _get_lc_amount_in_ref_currency(self, lc, amount_company, company_currency):
+    def _get_lc_amount_in_ref_currency(self, lc, amount_company, company_currency, po_currency, company):
         """
-        Devuelve (fecha, moneda_referencia, monto_referencia) para convertir
-        el costo en destino a la moneda de la OC.
+        Devuelve (fecha, moneda_referencia, monto_referencia, tipo_de_cambio) para
+        convertir el costo en destino a la moneda de la OC.
 
-        Si el costo en destino tiene factura de proveedor:
-          - usa la moneda y fecha de esa factura
-          - recalcula el monto proporcional en la moneda original de la factura
-            (más preciso que reconvertir desde moneda compañia)
+        El tipo de cambio se obtiene directamente del sistema de monedas de Odoo
+        (no del ratio de montos redondeados) para evitar errores de centavos.
 
-        Si no tiene factura:
-          - usa la moneda de la compañia y la fecha del costo en destino
+        TC expresado como: 1 {po_currency} = TC {ref_currency}
         """
         if lc.vendor_bill_id and lc.vendor_bill_id.invoice_date:
             bill = lc.vendor_bill_id
             lc_date = bill.invoice_date
             bill_currency = bill.currency_id
 
-            # Proporción del monto de esta(s) línea(s) sobre el total del costo en destino
-            # Ambos en moneda compañia → la proporción es válida
             if lc.amount_total and not float_is_zero(lc.amount_total, precision_rounding=company_currency.rounding):
                 ratio = amount_company / lc.amount_total
             else:
                 ratio = 0.0
 
-            # Monto proporcional en la moneda original de la factura del costo en destino
             bill_amount = bill.amount_untaxed * ratio
-            return lc_date, bill_currency, bill_amount
+
+            # TC exacto del sistema de monedas (sin errores de redondeo)
+            if bill_currency != po_currency:
+                rate = bill_currency._get_conversion_rate(bill_currency, po_currency, company, lc_date)
+                tc = round(1.0 / rate, 2) if rate else 0.0
+            else:
+                tc = 0.0
+
+            return lc_date, bill_currency, bill_amount, tc
         else:
             lc_date = lc.date or fields.Date.today()
-            return lc_date, company_currency, amount_company
+
+            if company_currency != po_currency:
+                rate = company_currency._get_conversion_rate(company_currency, po_currency, company, lc_date)
+                tc = round(1.0 / rate, 2) if rate else 0.0
+            else:
+                tc = 0.0
+
+            return lc_date, company_currency, amount_company, tc
