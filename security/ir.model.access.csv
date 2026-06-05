@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_purchase_cost_report_wizard,purchase.cost.report.wizard,model_purchase_cost_report_wizard,purchase.group_purchase_user,1,1,1,1
 access_purchase_cost_report_wizard_product,purchase.cost.report.wizard.product,model_purchase_cost_report_wizard_product,purchase.group_purchase_user,1,1,1,1
 access_purchase_cost_report_wizard_lc,purchase.cost.report.wizard.lc,model_purchase_cost_report_wizard_lc,purchase.group_purchase_user,1,1,1,1
+access_purchase_cost_report_wizard_lc_summary,purchase.cost.report.wizard.lc.summary,model_purchase_cost_report_wizard_lc_summary,purchase.group_purchase_user,1,1,1,1

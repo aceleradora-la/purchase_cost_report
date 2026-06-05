@@ -18,7 +18,10 @@ class PurchaseCostReportWizard(models.TransientModel):
         "purchase.cost.report.wizard.product", "wizard_id", string="Productos"
     )
     lc_line_ids = fields.One2many(
-        "purchase.cost.report.wizard.lc", "wizard_id", string="Costos en Destino"
+        "purchase.cost.report.wizard.lc", "wizard_id", string="Detalle por Producto"
+    )
+    lc_summary_ids = fields.One2many(
+        "purchase.cost.report.wizard.lc.summary", "wizard_id", string="Resumen Costos en Destino"
     )
 
     total_product = fields.Monetary("Total Proveedor", currency_field="currency_id", readonly=True)
@@ -74,6 +77,22 @@ class PurchaseCostReportWizard(models.TransientModel):
             self.env["purchase.cost.report.wizard.product"].create(product_lines)
         if lc_lines:
             self.env["purchase.cost.report.wizard.lc"].create(lc_lines)
+
+        # Resumen agrupado por LC (sin repetir por producto)
+        lc_summary_lines = [
+            {
+                "wizard_id": self.id,
+                "landed_cost_id": lcs["landed_cost"].id,
+                "vendor_bill_id": lcs["vendor_bill"].id if lcs["vendor_bill"] else False,
+                "date": lcs["date"],
+                "ref_currency_id": lcs["ref_currency"].id,
+                "amount_ref": lcs["amount_ref"],
+                "amount_po": lcs["amount_po"],
+            }
+            for lcs in data["lc_summary"]
+        ]
+        if lc_summary_lines:
+            self.env["purchase.cost.report.wizard.lc.summary"].create(lc_summary_lines)
 
         # Guardar totales y porcentaje en el wizard para mostrarlos en la vista
         self.write({
@@ -142,4 +161,32 @@ class PurchaseCostReportWizardLC(models.TransientModel):
     )
     amount_po = fields.Monetary(
         "Monto OC", currency_field="currency_id", readonly=True
+    )
+
+
+class PurchaseCostReportWizardLCSummary(models.TransientModel):
+    """Un registro por cada Costo en Destino (agrupado, sin repetir por producto)."""
+
+    _name = "purchase.cost.report.wizard.lc.summary"
+    _description = "Resumen Costos en Destino — Reporte Valuación"
+    _order = "date"
+
+    wizard_id = fields.Many2one("purchase.cost.report.wizard", ondelete="cascade")
+    currency_id = fields.Many2one("res.currency", related="wizard_id.currency_id")
+
+    landed_cost_id = fields.Many2one(
+        "stock.landed.cost", string="Costo en Destino", readonly=True
+    )
+    vendor_bill_id = fields.Many2one(
+        "account.move", string="Factura", readonly=True
+    )
+    date = fields.Date("Fecha", readonly=True)
+    ref_currency_id = fields.Many2one("res.currency", string="Moneda Orig.", readonly=True)
+    amount_ref = fields.Monetary(
+        "Monto Origen", currency_field="ref_currency_id", readonly=True,
+        help="Monto en la moneda original de la factura del costo en destino."
+    )
+    amount_po = fields.Monetary(
+        "Monto en Moneda OC", currency_field="currency_id", readonly=True,
+        help="Monto convertido a la moneda de la Orden de Compra."
     )

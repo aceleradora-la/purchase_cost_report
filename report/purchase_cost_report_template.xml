@@ -212,6 +212,72 @@
                             </table>
                         </t>
 
+                        <!-- Resumen de Costos en Destino -->
+                        <t t-if="data['lc_summary']">
+                            <h5 class="mt-4 mb-2" style="font-size: 12px; font-weight: bold; color: #333;">
+                                Resumen de Costos en Destino
+                            </h5>
+                            <table class="table table-sm" style="font-size: 11px;">
+                                <thead>
+                                    <tr style="background-color: #f0f0f0;">
+                                        <th style="width: 25%">Costo en Destino</th>
+                                        <th style="width: 25%">Factura</th>
+                                        <th class="text-center" style="width: 10%">Fecha</th>
+                                        <th class="text-end" style="width: 18%">
+                                            Monto Origen
+                                        </th>
+                                        <th class="text-center" style="width: 8%">Moneda</th>
+                                        <th class="text-end" style="width: 14%">
+                                            Monto
+                                            <t t-esc="currency.name"/>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data['lc_summary']" t-as="lcs">
+                                        <tr>
+                                            <td><t t-esc="lcs['landed_cost'].name"/></td>
+                                            <td>
+                                                <t t-if="lcs['vendor_bill'] and lcs['vendor_bill'].name">
+                                                    <t t-esc="lcs['vendor_bill'].name"/>
+                                                </t>
+                                                <t t-else=""><span class="text-muted">—</span></t>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-esc="lcs['date']" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-if="lcs['ref_currency'].id != currency.id">
+                                                    <t t-esc="formatLang(lcs['amount_ref'], currency_obj=lcs['ref_currency'])"/>
+                                                </t>
+                                                <t t-else=""><span class="text-muted">—</span></t>
+                                            </td>
+                                            <td class="text-center text-muted">
+                                                <t t-if="lcs['ref_currency'].id != currency.id">
+                                                    <t t-esc="lcs['ref_currency'].name"/>
+                                                    → <t t-esc="currency.name"/>
+                                                </t>
+                                            </td>
+                                            <td class="text-end fw-bold">
+                                                <t t-esc="formatLang(lcs['amount_po'], currency_obj=currency)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #e8e8e8; font-weight: bold;">
+                                        <td colspan="5" class="text-end">TOTAL COSTOS EN DESTINO</td>
+                                        <td class="text-end">
+                                            <t t-esc="formatLang(data['total_lc'], currency_obj=currency)"/>
+                                            <t t-if="data['lc_percentage']">
+                                                <br/><small style="color:#155724;">(<t t-esc="'%.2f' % data['lc_percentage']"/>%)</small>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
                         <!-- Nota al pie -->
                         <div class="mt-3" style="font-size: 11px; color: #666;">
                             <p>

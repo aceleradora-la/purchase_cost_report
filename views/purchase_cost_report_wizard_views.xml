@@ -81,8 +81,42 @@
                         </field>
                     </page>
 
-                    <!-- ── Tab 2: Detalle Costos en Destino ─────────────── -->
-                    <page string="Costos en Destino" name="lc_details">
+                    <!-- ── Tab 2: Resumen Costos en Destino ─────────────── -->
+                    <page string="Resumen Costos en Destino" name="lc_summary">
+                        <field name="lc_summary_ids" readonly="1" nolabel="1">
+                            <list string="Resumen de Costos en Destino">
+                                <field name="currency_id" column_invisible="1"/>
+                                <field name="ref_currency_id" column_invisible="1"/>
+                                <field name="landed_cost_id"
+                                       string="Costo en Destino"
+                                       options="{'no_create': True}"/>
+                                <field name="vendor_bill_id"
+                                       string="Factura"
+                                       options="{'no_create': True}"/>
+                                <field name="date" string="Fecha"/>
+                                <field name="amount_ref"
+                                       string="Monto Origen"
+                                       widget="monetary"
+                                       options="{'currency_field': 'ref_currency_id'}"
+                                       optional="show"/>
+                                <field name="ref_currency_id"
+                                       string="Mon. Orig."
+                                       optional="show"/>
+                                <field name="amount_po"
+                                       string="Monto en Moneda OC"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="fw-bold"/>
+                            </list>
+                        </field>
+                        <div class="text-muted mt-2" style="font-size: 12px;">
+                            Un registro por cada Costo en Destino imputado a esta recepción.
+                            El monto en moneda OC incluye todos los productos afectados por ese costo.
+                        </div>
+                    </page>
+
+                    <!-- ── Tab 3: Detalle por Producto ───────────────────── -->
+                    <page string="Detalle por Producto" name="lc_details">
                         <field name="lc_line_ids" readonly="1" nolabel="1">
                             <list string="Detalle de Costos en Destino">
                                 <field name="currency_id" column_invisible="1"/>

@@ -136,6 +136,24 @@ class PurchaseCostReport(models.AbstractModel):
         # % de costos en destino sobre el costo del proveedor
         lc_percentage = (total_lc / total_product * 100.0) if total_product else 0.0
 
+        # ── Resumen de Costos en Destino (agrupado por LC, sin repetir por producto) ──
+        lc_summary_dict = {}
+        for line in lines:
+            for lc in line["lc_lines"]:
+                key = lc["landed_cost"].id
+                if key not in lc_summary_dict:
+                    lc_summary_dict[key] = {
+                        "landed_cost": lc["landed_cost"],
+                        "vendor_bill": lc["vendor_bill"],
+                        "date": lc["date"],
+                        "ref_currency": lc["ref_currency"],
+                        "amount_ref": 0.0,
+                        "amount_po": 0.0,
+                    }
+                lc_summary_dict[key]["amount_ref"] += lc["amount_ref"]
+                lc_summary_dict[key]["amount_po"] += lc["amount_po"]
+        lc_summary = sorted(lc_summary_dict.values(), key=lambda x: x["date"] or "")
+
         return {
             "order": order,
             "currency": po_currency,
@@ -144,6 +162,7 @@ class PurchaseCostReport(models.AbstractModel):
             "total_lc": total_lc,
             "total_all": total_all,
             "lc_percentage": lc_percentage,
+            "lc_summary": lc_summary,
         }
 
     def _get_lc_amount_in_ref_currency(self, lc, amount_company, company_currency):
