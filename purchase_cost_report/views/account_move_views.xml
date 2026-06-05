@@ -8,6 +8,8 @@
         <field name="arch" type="xml">
             <!-- Botón en la barra de estado de la factura de proveedor -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Campo necesario para que el frontend evalúe el invisible -->
+                <field name="purchase_cost_show_button" invisible="1"/>
                 <button
                     name="action_print_purchase_cost_report"
                     type="object"
