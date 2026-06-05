@@ -6,8 +6,7 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
-            <!-- Botón en la barra de estado del formulario de OC -->
-            <!-- Campo invisible declarado ANTES del button_box para que el frontend lo cargue -->
+            <!-- Campo invisible ANTES del button_box para que el frontend lo cargue -->
             <xpath expr="//div[@name='button_box']" position="before">
                 <field name="purchase_cost_show_button" invisible="1"/>
             </xpath>

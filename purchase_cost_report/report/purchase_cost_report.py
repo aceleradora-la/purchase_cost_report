@@ -152,18 +152,6 @@ class PurchaseCostReport(models.AbstractModel):
                     }
                 lc_summary_dict[key]["amount_ref"] += lc["amount_ref"]
                 lc_summary_dict[key]["amount_po"] += lc["amount_po"]
-
-        # Calcular tipo de cambio por LC: 1 {po_currency} = X {ref_currency}
-        for lcs in lc_summary_dict.values():
-            if (
-                lcs["ref_currency"] != po_currency
-                and not float_is_zero(lcs["amount_po"],
-                                      precision_rounding=po_currency.rounding)
-            ):
-                lcs["exchange_rate"] = lcs["amount_ref"] / lcs["amount_po"]
-            else:
-                lcs["exchange_rate"] = 0.0
-
         lc_summary = sorted(lc_summary_dict.values(), key=lambda x: x["date"] or "")
 
         return {
