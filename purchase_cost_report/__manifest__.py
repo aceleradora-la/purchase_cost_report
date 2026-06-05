@@ -1,11 +1,8 @@
 {
     "name": "Purchase Cost Report in Purchase Currency",
     "version": "19.0.1.0.0",
-    "category": "Inventory/Inventory",
-    "summary": (
-        "Valuation report for purchase receptions in the purchase currency, "
-        "including landed costs converted at the exchange rate of each cost date."
-    ),
+    "category": "Purchase",
+    "summary": "Valuation report for purchase receptions in the purchase currency, including landed costs converted at the exchange rate of each cost date.",
     "author": "Aceleradora LA",
     "website": "https://aceleradora.la",
     "maintainer": "Aceleradora LA",

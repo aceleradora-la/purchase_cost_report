@@ -102,6 +102,11 @@
                                 <field name="ref_currency_id"
                                        string="Mon. Orig."
                                        optional="show"/>
+                                <field name="exchange_rate"
+                                       string="Tipo de Cambio"
+                                       widget="float"
+                                       digits="[16,4]"
+                                       optional="show"/>
                                 <field name="amount_po"
                                        string="Monto en Moneda OC"
                                        widget="monetary"
@@ -110,8 +115,9 @@
                             </list>
                         </field>
                         <div class="text-muted mt-2" style="font-size: 12px;">
-                            Un registro por cada Costo en Destino imputado a esta recepción.
-                            El monto en moneda OC incluye todos los productos afectados por ese costo.
+                            <strong>Tipo de Cambio:</strong>
+                            1 unidad de la moneda OC = X unidades de la moneda origen,
+                            calculado a la fecha de la factura del costo en destino.
                         </div>
                     </page>
 

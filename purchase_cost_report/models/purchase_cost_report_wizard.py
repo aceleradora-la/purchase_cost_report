@@ -87,6 +87,7 @@ class PurchaseCostReportWizard(models.TransientModel):
                 "date": lcs["date"],
                 "ref_currency_id": lcs["ref_currency"].id,
                 "amount_ref": lcs["amount_ref"],
+                "exchange_rate": lcs["exchange_rate"],
                 "amount_po": lcs["amount_po"],
             }
             for lcs in data["lc_summary"]
@@ -185,6 +186,10 @@ class PurchaseCostReportWizardLCSummary(models.TransientModel):
     amount_ref = fields.Monetary(
         "Monto Origen", currency_field="ref_currency_id", readonly=True,
         help="Monto en la moneda original de la factura del costo en destino."
+    )
+    exchange_rate = fields.Float(
+        "Tipo de Cambio", digits=(16, 4), readonly=True,
+        help="1 unidad de moneda OC = X unidades de moneda origen."
     )
     amount_po = fields.Monetary(
         "Monto en Moneda OC", currency_field="currency_id", readonly=True,
