@@ -220,12 +220,11 @@
                             <table class="table table-sm" style="font-size: 11px;">
                                 <thead>
                                     <tr style="background-color: #f0f0f0;">
-                                        <th style="width: 22%">Costo en Destino</th>
-                                        <th style="width: 20%">Factura</th>
-                                        <th class="text-center" style="width: 9%">Fecha</th>
-                                        <th class="text-end" style="width: 15%">Monto Origen</th>
-                                        <th class="text-center" style="width: 7%">Moneda</th>
-                                        <th class="text-center" style="width: 13%">Tipo de Cambio</th>
+                                        <th style="width: 25%">Costo en Destino</th>
+                                        <th style="width: 22%">Factura</th>
+                                        <th class="text-center" style="width: 10%">Fecha</th>
+                                        <th class="text-end" style="width: 17%">Monto Origen</th>
+                                        <th class="text-center" style="width: 12%">Moneda / TC</th>
                                         <th class="text-end" style="width: 14%">
                                             Monto <t t-esc="currency.name"/>
                                         </th>
@@ -254,17 +253,13 @@
                                                 <t t-if="lcs['ref_currency'].id != currency.id">
                                                     <t t-esc="lcs['ref_currency'].name"/>
                                                     → <t t-esc="currency.name"/>
-                                                </t>
-                                            </td>
-                                            <td class="text-center">
-                                                <t t-if="lcs['exchange_rate']">
-                                                    <small>
-                                                        1 <t t-esc="currency.name"/> =
+                                                    <t t-if="lcs['exchange_rate']">
+                                                        <br/>
+                                                        <small>(1 <t t-esc="currency.name"/> =
                                                         <t t-esc="formatLang(lcs['exchange_rate'], digits=2)"/>
-                                                        <t t-esc="lcs['ref_currency'].name"/>
-                                                    </small>
+                                                        <t t-esc="lcs['ref_currency'].name"/>)</small>
+                                                    </t>
                                                 </t>
-                                                <t t-else=""><span class="text-muted">—</span></t>
                                             </td>
                                             <td class="text-end fw-bold">
                                                 <t t-esc="formatLang(lcs['amount_po'], currency_obj=currency)"/>
@@ -274,7 +269,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr style="background-color: #e8e8e8; font-weight: bold;">
-                                        <td colspan="6" class="text-end">TOTAL COSTOS EN DESTINO</td>
+                                        <td colspan="5" class="text-end">TOTAL COSTOS EN DESTINO</td>
                                         <td class="text-end">
                                             <t t-esc="formatLang(data['total_lc'], currency_obj=currency)"/>
                                             <t t-if="data['lc_percentage']">

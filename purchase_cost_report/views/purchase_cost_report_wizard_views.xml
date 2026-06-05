@@ -105,7 +105,7 @@
                                 <field name="exchange_rate"
                                        string="Tipo de Cambio"
                                        widget="float"
-                                       digits="[16,4]"
+                                       digits="[16,2]"
                                        optional="show"/>
                                 <field name="amount_po"
                                        string="Monto en Moneda OC"
