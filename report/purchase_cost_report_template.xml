@@ -182,12 +182,32 @@
                                         </td>
                                         <td class="text-end">
                                             <t t-esc="formatLang(data['total_lc'], currency_obj=currency)"/>
+                                            <t t-if="data['lc_percentage']">
+                                                <br/>
+                                                <span style="font-size:10px; color:#555;">
+                                                    (<t t-esc="'%.2f' % data['lc_percentage']"/>% s/compra)
+                                                </span>
+                                            </t>
                                         </td>
                                         <td/>
                                         <td class="text-end">
                                             <t t-esc="formatLang(data['total_all'], currency_obj=currency)"/>
                                         </td>
                                     </tr>
+                                    <!-- Fila resumen del % de importación -->
+                                    <t t-if="data['lc_percentage']">
+                                        <tr style="background-color: #d4edda; font-weight: bold; font-size: 12px;">
+                                            <td colspan="9" class="text-center" style="padding: 6px;">
+                                                Costo adicional de importación:
+                                                <span style="font-size: 15px; color: #155724;">
+                                                    <t t-esc="'%.2f' % data['lc_percentage']"/>%
+                                                </span>
+                                                sobre el costo del proveedor
+                                                (<t t-esc="formatLang(data['total_lc'], currency_obj=currency)"/>
+                                                / <t t-esc="formatLang(data['total_product'], currency_obj=currency)"/>)
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </tfoot>
                             </table>
                         </t>

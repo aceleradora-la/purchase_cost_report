@@ -133,6 +133,8 @@ class PurchaseCostReport(models.AbstractModel):
         total_product = sum(l["product_total_cost"] for l in lines)
         total_lc = sum(l["lc_total"] for l in lines)
         total_all = sum(l["total_cost"] for l in lines)
+        # % de costos en destino sobre el costo del proveedor
+        lc_percentage = (total_lc / total_product * 100.0) if total_product else 0.0
 
         return {
             "order": order,
@@ -141,6 +143,7 @@ class PurchaseCostReport(models.AbstractModel):
             "total_product": total_product,
             "total_lc": total_lc,
             "total_all": total_all,
+            "lc_percentage": lc_percentage,
         }
 
     def _get_lc_amount_in_ref_currency(self, lc, amount_company, company_currency):

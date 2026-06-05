@@ -21,6 +21,11 @@ class PurchaseCostReportWizard(models.TransientModel):
         "purchase.cost.report.wizard.lc", "wizard_id", string="Costos en Destino"
     )
 
+    total_product = fields.Monetary("Total Proveedor", currency_field="currency_id", readonly=True)
+    total_lc = fields.Monetary("Total Costos Destino", currency_field="currency_id", readonly=True)
+    total_all = fields.Monetary("Costo Total", currency_field="currency_id", readonly=True)
+    lc_percentage = fields.Float("% Costos s/Compra", digits=(5, 2), readonly=True)
+
     @api.model_create_multi
     def create(self, vals_list):
         wizards = super().create(vals_list)
@@ -69,6 +74,14 @@ class PurchaseCostReportWizard(models.TransientModel):
             self.env["purchase.cost.report.wizard.product"].create(product_lines)
         if lc_lines:
             self.env["purchase.cost.report.wizard.lc"].create(lc_lines)
+
+        # Guardar totales y porcentaje en el wizard para mostrarlos en la vista
+        self.write({
+            "total_product": data["total_product"],
+            "total_lc": data["total_lc"],
+            "total_all": data["total_all"],
+            "lc_percentage": data["lc_percentage"],
+        })
 
     def action_print_pdf(self):
         """Imprime el PDF desde el wizard."""

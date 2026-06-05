@@ -10,17 +10,34 @@
 
                 <!-- Encabezado con datos de la OC -->
                 <div class="o_horizontal_separator mb-3">
-                    <div class="row">
-                        <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-5">
                             <field name="order_id" readonly="1" nolabel="1"
                                    options="{'no_open': False}"
                                    class="fs-4 fw-bold text-primary"/>
                         </div>
-                        <div class="col-6 text-end text-muted">
-                            Moneda:
-                            <strong>
-                                <field name="currency_id" readonly="1" nolabel="1" class="d-inline"/>
-                            </strong>
+                        <div class="col-7 text-end">
+                            <field name="currency_id" invisible="1"/>
+                            <!-- Resumen financiero en línea -->
+                            <span class="text-muted me-3">
+                                Proveedor:
+                                <strong><field name="total_product" readonly="1" nolabel="1" class="d-inline" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong>
+                            </span>
+                            <span class="text-muted me-3">
+                                Destino:
+                                <strong><field name="total_lc" readonly="1" nolabel="1" class="d-inline" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong>
+                            </span>
+                            <span class="text-muted me-3">
+                                Total:
+                                <strong><field name="total_all" readonly="1" nolabel="1" class="d-inline" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong>
+                            </span>
+                            <!-- % destacado -->
+                            <span class="badge rounded-pill fs-6"
+                                  style="background-color:#198754; color:white; padding: 6px 14px;"
+                                  invisible="lc_percentage == 0">
+                                <field name="lc_percentage" readonly="1" nolabel="1" class="d-inline" widget="float" options="{'digits': [5,2]}"/>%
+                                costos de importación
+                            </span>
                         </div>
                     </div>
                 </div>
