@@ -7,9 +7,11 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <!-- Botón en la barra de estado de la factura de proveedor -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <!-- Campo necesario para que el frontend evalúe el invisible -->
+            <!-- Campo invisible declarado ANTES del button_box para que el frontend lo cargue -->
+            <xpath expr="//div[@name='button_box']" position="before">
                 <field name="purchase_cost_show_button" invisible="1"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_print_purchase_cost_report"
                     type="object"
