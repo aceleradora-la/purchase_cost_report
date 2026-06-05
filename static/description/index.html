@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<!-- BANNER -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h2 class="oe_slogan" style="color: #1a6496;">
+                Purchase Cost Report in Purchase Currency
+            </h2>
+            <h3 class="oe_slogan">
+                Know the real import cost of your products in the currency you actually paid.
+            </h3>
+        </div>
+    </div>
+</section>
+
+<!-- INTRO -->
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <p class="oe_mt32" style="font-size: 15px;">
+                When your company buys in a foreign currency (e.g. EUR or USD) but operates in a local
+                currency (e.g. ARS), Odoo's standard reports show all costs in the <strong>company currency</strong>.
+                This module adds a dedicated valuation report that shows the <strong>real unit and total
+                cost of each received product in the purchase order currency</strong>, including landed
+                costs converted at the exchange rate of the date of each cost.
+            </p>
+            <p style="font-size: 15px;">
+                Access it with one click from the Purchase Order or the Vendor Bill.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- KEY FEATURES -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">Key Features</h2>
+
+        <div class="oe_span4">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <i class="fa fa-money fa-4x" style="color: #1a6496; margin: 20px 0; display: block; text-align: center;"></i>
+            </div>
+            <h3 class="oe_slogan" style="font-size: 14px;">Costs in Purchase Currency</h3>
+            <p>
+                Unit and total vendor cost shown in the PO currency — no more manual currency conversions.
+            </p>
+        </div>
+
+        <div class="oe_span4">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <i class="fa fa-ship fa-4x" style="color: #1a6496; margin: 20px 0; display: block; text-align: center;"></i>
+            </div>
+            <h3 class="oe_slogan" style="font-size: 14px;">Landed Costs Converted at Cost Date</h3>
+            <p>
+                Each landed cost is converted to the PO currency using the exchange rate
+                <strong>at the date of the landed cost invoice</strong>, even if the invoice is in
+                a third currency (e.g. ARS freight invoice on a EUR purchase).
+            </p>
+        </div>
+
+        <div class="oe_span4">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <i class="fa fa-percent fa-4x" style="color: #1a6496; margin: 20px 0; display: block; text-align: center;"></i>
+            </div>
+            <h3 class="oe_slogan" style="font-size: 14px;">Import Cost Percentage</h3>
+            <p>
+                Instantly see what percentage of extra cost (freight, customs, insurance) you incurred
+                to import, relative to the vendor invoice total.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- REPORT CONTENTS -->
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">What the Report Shows</h2>
+        <div class="oe_span12">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px;">
+                <thead>
+                    <tr style="background-color: #1a6496; color: white;">
+                        <th style="padding: 8px 12px; text-align: left;">Column</th>
+                        <th style="padding: 8px 12px; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 8px 12px; font-weight: bold;">Product</td>
+                        <td style="padding: 8px 12px;">Product name and description</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 12px; font-weight: bold;">Ordered / Received Qty</td>
+                        <td style="padding: 8px 12px;">Quantities from the PO and actual receipts</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 8px 12px; font-weight: bold;">Vendor Unit Cost</td>
+                        <td style="padding: 8px 12px;">Price per unit in PO currency (directly from the PO line)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 12px; font-weight: bold;">Vendor Total Cost</td>
+                        <td style="padding: 8px 12px;">Unit cost × received quantity, in PO currency</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 8px 12px; font-weight: bold;">Landed Costs</td>
+                        <td style="padding: 8px 12px;">
+                            Sum of all landed costs allocated to this product, converted to PO currency
+                            at the rate of each cost's invoice date. Breakdown per landed cost shown as sub-rows.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 12px; font-weight: bold;">Total Unit Cost</td>
+                        <td style="padding: 8px 12px;"><strong>(Vendor + Landed Costs) / Received Qty</strong> in PO currency</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="padding: 8px 12px; font-weight: bold;">Total Cost</td>
+                        <td style="padding: 8px 12px;">Vendor + Landed Costs in PO currency</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 12px; font-weight: bold;">Import Cost %</td>
+                        <td style="padding: 8px 12px;">Total Landed Costs / Total Vendor Cost × 100</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ON-SCREEN VIEW -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">On-Screen Wizard + PDF Report</h2>
+        <div class="oe_span6">
+            <h3 style="font-size: 14px; font-weight: bold;">📊 Interactive Wizard</h3>
+            <ul style="font-size: 13px; line-height: 1.8;">
+                <li><strong>Tab 1 – Product Summary:</strong> all products with full cost breakdown</li>
+                <li><strong>Tab 2 – Landed Cost Summary:</strong> one row per landed cost with
+                    clickable links to the landed cost and its vendor invoice</li>
+                <li><strong>Tab 3 – Detail per Product:</strong> full cross-reference of product × landed cost</li>
+                <li>Import cost % badge displayed prominently in the header</li>
+                <li>"Print PDF" button inside the wizard</li>
+            </ul>
+        </div>
+        <div class="oe_span6">
+            <h3 style="font-size: 14px; font-weight: bold;">🖨️ PDF Report</h3>
+            <ul style="font-size: 13px; line-height: 1.8;">
+                <li>Main table: products with unit/total costs and landed cost sub-rows</li>
+                <li>Summary grid: one row per landed cost with origin currency and OC amount</li>
+                <li>Highlighted import cost percentage banner</li>
+                <li>Accessible from Print menu on the Purchase Order</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- WHERE THE BUTTON APPEARS -->
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">Smart Button Visibility</h2>
+        <div class="oe_span12">
+            <p style="font-size: 14px;">
+                The <strong>"Valuación" button</strong> appears automatically on:
+            </p>
+            <ul style="font-size: 13px; line-height: 2;">
+                <li>✅ <strong>Purchase Orders</strong> — only when state is <em>Purchase Order</em> or <em>Done</em>
+                    AND at least one line has a <strong>storable product</strong></li>
+                <li>✅ <strong>Vendor Bills</strong> — only when the invoice has lines linked to a PO
+                    with <strong>storable products</strong></li>
+                <li>❌ Hidden on service-only invoices, freight bills, and draft orders</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- MULTI-CURRENCY LOGIC -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">Multi-Currency Logic</h2>
+        <div class="oe_span12">
+            <p style="font-size: 14px; margin-bottom: 12px;">
+                The module handles the following scenarios for landed cost conversion:
+            </p>
+            <div style="background: #f0f7ff; border-left: 4px solid #1a6496; padding: 12px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 10px;">
+                <strong>Scenario A — Landed cost invoice in the same currency as the PO (e.g. EUR):</strong><br/>
+                Amount used directly — no conversion needed.
+            </div>
+            <div style="background: #f0f7ff; border-left: 4px solid #1a6496; padding: 12px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 10px;">
+                <strong>Scenario B — Landed cost invoice in a third currency (e.g. ARS freight on EUR purchase):</strong><br/>
+                Amount converted from invoice currency → PO currency using the
+                exchange rate on the <strong>invoice date of the landed cost</strong>.
+            </div>
+            <div style="background: #f0f7ff; border-left: 4px solid #1a6496; padding: 12px 16px; border-radius: 4px; font-size: 13px;">
+                <strong>Scenario C — Landed cost without vendor bill:</strong><br/>
+                Amount converted from company currency → PO currency using the rate on the landed cost date.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">Requirements</h2>
+        <div class="oe_span12">
+            <ul style="font-size: 14px; line-height: 2;">
+                <li>Odoo 19.0 Community or Enterprise</li>
+                <li>Modules: <code>purchase_stock</code>, <code>stock_landed_costs</code></li>
+                <li>Landed Costs feature enabled in Inventory settings</li>
+                <li>Multi-currency enabled in Accounting settings (for cross-currency conversion)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color: #1a6496;">About Aceleradora LA</h2>
+        <div class="oe_span12" style="text-align: center;">
+            <p style="font-size: 14px;">
+                We build practical Odoo modules for Latin American businesses, focused on
+                import/export workflows, multi-currency operations, and local regulatory requirements.
+            </p>
+            <p style="font-size: 14px;">
+                🌐 <a href="https://aceleradora.la">aceleradora.la</a> &nbsp;|&nbsp;
+                📧 <a href="mailto:info@aceleradora.la">info@aceleradora.la</a> &nbsp;|&nbsp;
+                🐙 <a href="https://github.com/aceleradora-la">github.com/aceleradora-la</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
