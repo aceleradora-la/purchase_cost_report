@@ -188,7 +188,8 @@ class PurchaseCostReportWizard(models.TransientModel):
                     ("date_end", ">=", date_start),
             ])
             for item in existing:
-                if item.date_start and item.date_start >= date_start:
+                item_date_start = item.date_start.date() if hasattr(item.date_start, "date") else item.date_start
+                if item_date_start and item_date_start >= date_start:
                     # El ítem existente empieza en el mismo día o después → eliminarlo
                     item.unlink()
                 else:
