@@ -200,6 +200,10 @@
                                        widget="monetary"
                                        options="{'currency_field': 'currency_id'}"
                                        class="fw-bold"/>
+                                <field name="note_preview"
+                                       string="Cálculo"
+                                       optional="hide"
+                                       readonly="1"/>
                             </list>
                         </field>
 

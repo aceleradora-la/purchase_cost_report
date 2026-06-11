@@ -276,6 +276,19 @@ class PurchaseCostReportWizardPricing(models.TransientModel):
         help="Precio a aplicar en la lista. Se puede editar manualmente.",
     )
 
+    note_preview = fields.Char(
+        "Cálculo", compute="_compute_note_preview", store=False,
+    )
+
+    @api.depends("cost_total", "margin_percent", "final_price", "wizard_id.margin_percent", "wizard_id.currency_id")
+    def _compute_note_preview(self):
+        for line in self:
+            margin = line.margin_percent if line.margin_percent else line.wizard_id.margin_percent
+            currency = line.wizard_id.currency_id.name or ""
+            line.note_preview = "Costo: %.2f %s | Margen: %.2f%% | Precio: %.2f %s" % (
+                line.cost_total, currency, margin, line.final_price or 0.0, currency,
+            )
+
     @api.depends("cost_total", "margin_percent", "wizard_id.margin_percent")
     def _compute_suggested_price(self):
         for line in self:
