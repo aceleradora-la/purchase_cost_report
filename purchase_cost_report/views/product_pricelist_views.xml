@@ -7,19 +7,19 @@
         <field name="model">product.pricelist.item</field>
         <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//separator" position="before">
-                <separator string="Origen del precio" invisible="not purchase_cost_note"/>
-                <field name="purchase_cost_note"
-                       nolabel="1"
-                       readonly="1"
-                       invisible="not purchase_cost_note"
-                       colspan="2"/>
-                <button name="action_open_cost_history"
-                        type="object"
-                        string="Ver historial completo"
-                        icon="fa-history"
-                        class="btn-link"
-                        invisible="not purchase_cost_note"/>
+            <xpath expr="//field[@name='currency_id']" position="before">
+                <group invisible="not purchase_cost_note" string="Origen del precio" colspan="2" col="2">
+                    <field name="purchase_cost_note"
+                           nolabel="1"
+                           readonly="1"
+                           colspan="2"/>
+                    <button name="action_open_cost_history"
+                            type="object"
+                            string="Ver historial completo"
+                            icon="fa-history"
+                            class="btn-link"
+                            colspan="2"/>
+                </group>
             </xpath>
         </field>
     </record>
