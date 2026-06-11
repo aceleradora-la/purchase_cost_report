@@ -1,4 +1,7 @@
-from odoo import api, fields, models
+from datetime import timedelta
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseCostReportWizard(models.TransientModel):
@@ -28,6 +31,23 @@ class PurchaseCostReportWizard(models.TransientModel):
     total_lc = fields.Monetary("Total Costos Destino", currency_field="currency_id", readonly=True)
     total_all = fields.Monetary("Costo Total", currency_field="currency_id", readonly=True)
     lc_percentage = fields.Float("% Costos s/Compra", digits=(5, 2), readonly=True)
+
+    # ── Actualización de precios de venta ─────────────────────────────
+    pricelist_id = fields.Many2one(
+        "product.pricelist", string="Lista de Precios",
+        help="Lista de precios donde se actualizarán los precios de venta.",
+    )
+    margin_percent = fields.Float(
+        "Margen de Ganancia (%)", digits=(5, 2), default=0.0,
+        help="Margen global aplicado sobre el costo total. Puede sobreescribirse por producto.",
+    )
+    price_date_start = fields.Date(
+        "Vigencia desde", default=fields.Date.today,
+        help="Fecha desde la que rigen los nuevos precios. El precio anterior se vence el día anterior.",
+    )
+    pricing_line_ids = fields.One2many(
+        "purchase.cost.report.wizard.pricing", "wizard_id", string="Precios de Venta",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -103,12 +123,150 @@ class PurchaseCostReportWizard(models.TransientModel):
             "lc_percentage": data["lc_percentage"],
         })
 
+        # Poblar líneas de pricing (una por producto)
+        pricing_lines = []
+        for line in data["lines"]:
+            pricing_lines.append({
+                "wizard_id": self.id,
+                "product_id": line["product"].id,
+                "cost_total": line["total_cost"],
+            })
+        if pricing_lines:
+            self.env["purchase.cost.report.wizard.pricing"].create(pricing_lines)
+
+    @api.onchange("margin_percent")
+    def _onchange_margin_percent(self):
+        """Propaga el margen global a las líneas que no tienen margen propio."""
+        for line in self.pricing_line_ids:
+            if not line.margin_percent:
+                line.final_price = line.cost_total * (1.0 + self.margin_percent / 100.0)
+
     def action_print_pdf(self):
         """Imprime el PDF desde el wizard."""
         return (
             self.env.ref("purchase_cost_report.action_report_purchase_cost")
             .report_action(self.order_id)
         )
+
+    def action_apply_prices(self):
+        """Crea o actualiza ítems de lista de precios para cada producto del reporte."""
+        self.ensure_one()
+        if not self.pricelist_id:
+            raise UserError(_("Seleccioná una lista de precios antes de aplicar los precios."))
+        if not self.price_date_start:
+            raise UserError(_("Indicá la fecha de vigencia de los nuevos precios."))
+        if not self.pricing_line_ids:
+            raise UserError(_("No hay productos con precio calculado para aplicar."))
+
+        PricelistItem = self.env["product.pricelist.item"]
+        pricelist = self.pricelist_id
+        date_start = self.price_date_start
+        date_end_prev = date_start - timedelta(days=1)
+        company = self.order_id.company_id
+        po_currency = self.order_id.currency_id
+        pl_currency = pricelist.currency_id
+
+        for line in self.pricing_line_ids:
+            if not line.final_price:
+                continue
+
+            # Convertir precio a la moneda de la lista de precios si es necesario
+            if pl_currency != po_currency:
+                final_price_pl = po_currency._convert(
+                    line.final_price, pl_currency, company, date_start
+                )
+            else:
+                final_price_pl = line.final_price
+
+            # Vencer ítems vigentes existentes para este producto en esta lista
+            existing = PricelistItem.search([
+                ("pricelist_id", "=", pricelist.id),
+                ("product_id", "=", line.product_id.id),
+                ("compute_price", "=", "fixed"),
+                "|",
+                    ("date_end", "=", False),
+                    ("date_end", ">=", date_start),
+            ])
+            if existing:
+                existing.write({"date_end": date_end_prev})
+
+            # Crear nuevo ítem
+            PricelistItem.create({
+                "pricelist_id": pricelist.id,
+                "product_id": line.product_id.id,
+                "applied_on": "0_product_variant",
+                "compute_price": "fixed",
+                "fixed_price": final_price_pl,
+                "date_start": date_start,
+                "date_end": False,
+            })
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Precios actualizados"),
+                "message": _(
+                    "%d precios actualizados en la lista '%s' con vigencia desde %s."
+                ) % (
+                    len(self.pricing_line_ids.filtered("final_price")),
+                    pricelist.name,
+                    date_start.strftime("%d/%m/%Y"),
+                ),
+                "type": "success",
+                "sticky": False,
+                "next": {"type": "ir.actions.act_window_close"},
+            },
+        }
+
+
+class PurchaseCostReportWizardPricing(models.TransientModel):
+    """Una fila por producto para definir el precio de venta a aplicar."""
+
+    _name = "purchase.cost.report.wizard.pricing"
+    _description = "Línea de Precio de Venta — Reporte Valuación"
+    _order = "product_id"
+
+    wizard_id = fields.Many2one("purchase.cost.report.wizard", ondelete="cascade")
+    currency_id = fields.Many2one("res.currency", related="wizard_id.currency_id")
+
+    product_id = fields.Many2one("product.product", string="Producto", readonly=True)
+    cost_total = fields.Monetary(
+        "Costo Total", currency_field="currency_id", readonly=True,
+        help="Costo total del producto (proveedor + costos en destino) en moneda OC.",
+    )
+    margin_percent = fields.Float(
+        "Margen (%)", digits=(5, 2),
+        help="Si se deja en 0, se hereda el margen global del wizard.",
+    )
+    suggested_price = fields.Monetary(
+        "Precio Sugerido", currency_field="currency_id", readonly=True,
+        compute="_compute_suggested_price", store=True,
+    )
+    final_price = fields.Monetary(
+        "Precio Final", currency_field="currency_id",
+        help="Precio a aplicar en la lista. Se puede editar manualmente.",
+    )
+
+    @api.depends("cost_total", "margin_percent", "wizard_id.margin_percent")
+    def _compute_suggested_price(self):
+        for line in self:
+            margin = line.margin_percent if line.margin_percent else line.wizard_id.margin_percent
+            line.suggested_price = line.cost_total * (1.0 + margin / 100.0)
+
+    @api.onchange("suggested_price")
+    def _onchange_suggested_price(self):
+        """Pre-rellena final_price con el sugerido cuando cambia."""
+        for line in self:
+            if not line.final_price or line.final_price == 0:
+                line.final_price = line.suggested_price
+
+    @api.onchange("margin_percent")
+    def _onchange_margin_percent(self):
+        """Recalcula final_price cuando cambia el margen de la línea."""
+        for line in self:
+            margin = line.margin_percent if line.margin_percent else line.wizard_id.margin_percent
+            line.final_price = line.cost_total * (1.0 + margin / 100.0)
 
 
 class PurchaseCostReportWizardProduct(models.TransientModel):

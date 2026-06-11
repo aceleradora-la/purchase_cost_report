@@ -10,6 +10,7 @@
     "depends": [
         "purchase_stock",
         "stock_landed_costs",
+        "sale_management",
     ],
     "data": [
         "security/ir.model.access.csv",

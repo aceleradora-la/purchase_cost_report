@@ -155,6 +155,62 @@
                         </div>
                     </page>
 
+                    <!-- ── Tab 4: Actualizar Precios de Venta ────────────── -->
+                    <page string="Actualizar Precios de Venta" name="pricing">
+
+                        <!-- Controles globales -->
+                        <group>
+                            <group string="Lista de precios">
+                                <field name="pricelist_id"
+                                       options="{'no_create': True}"
+                                       placeholder="Seleccioná una lista de precios…"/>
+                                <field name="price_date_start"/>
+                            </group>
+                            <group string="Margen global">
+                                <field name="margin_percent"
+                                       widget="float"
+                                       options="{'digits': [5,2]}"
+                                       string="Margen de Ganancia (%)"
+                                       help="Se aplica a todos los productos. Podés sobreescribirlo por línea."/>
+                            </group>
+                        </group>
+
+                        <!-- Tabla de líneas de precio -->
+                        <field name="pricing_line_ids" nolabel="1">
+                            <list editable="bottom" string="Precios por Producto">
+                                <field name="currency_id" column_invisible="1"/>
+                                <field name="product_id" string="Producto" readonly="1"/>
+                                <field name="cost_total"
+                                       string="Costo Total"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       readonly="1"/>
+                                <field name="margin_percent"
+                                       string="Margen (%)"
+                                       widget="float"
+                                       options="{'digits': [5,2]}"
+                                       help="Dejá en 0 para usar el margen global."/>
+                                <field name="suggested_price"
+                                       string="Precio Sugerido"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       readonly="1"/>
+                                <field name="final_price"
+                                       string="Precio Final"
+                                       widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"
+                                       class="fw-bold"/>
+                            </list>
+                        </field>
+
+                        <div class="text-muted mt-2" style="font-size: 12px;">
+                            Si la lista de precios está en otra moneda, el precio final se convierte
+                            automáticamente al momento de aplicar.
+                            El precio vigente anterior se vence el día antes de la fecha de vigencia indicada.
+                        </div>
+
+                    </page>
+
                 </notebook>
 
                 <!-- Botones de acción -->
@@ -164,6 +220,13 @@
                             string="Imprimir PDF"
                             class="btn-primary"
                             icon="fa-print"/>
+                    <button name="action_apply_prices"
+                            type="object"
+                            string="Aplicar Precios"
+                            class="btn-success"
+                            icon="fa-tag"
+                            invisible="not pricelist_id"
+                            confirm="¿Aplicar los precios calculados a la lista de precios seleccionada? Los precios vigentes se vencerán el día anterior a la fecha de vigencia indicada."/>
                     <button string="Cerrar" class="btn-secondary" special="cancel"/>
                 </footer>
 
