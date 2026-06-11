@@ -4,3 +4,4 @@ access_purchase_cost_report_wizard_product,purchase.cost.report.wizard.product,m
 access_purchase_cost_report_wizard_lc,purchase.cost.report.wizard.lc,model_purchase_cost_report_wizard_lc,purchase.group_purchase_user,1,1,1,1
 access_purchase_cost_report_wizard_lc_summary,purchase.cost.report.wizard.lc.summary,model_purchase_cost_report_wizard_lc_summary,purchase.group_purchase_user,1,1,1,1
 access_purchase_cost_report_wizard_pricing,purchase.cost.report.wizard.pricing,model_purchase_cost_report_wizard_pricing,purchase.group_purchase_user,1,1,1,1
+access_purchase_cost_price_history,purchase.cost.price.history,model_purchase_cost_price_history,purchase.group_purchase_user,1,1,1,1

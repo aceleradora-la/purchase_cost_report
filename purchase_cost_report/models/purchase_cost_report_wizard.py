@@ -189,11 +189,11 @@ class PurchaseCostReportWizard(models.TransientModel):
             ])
             for item in existing:
                 item_date_start = item.date_start.date() if hasattr(item.date_start, "date") else item.date_start
-                if item_date_start and item_date_start >= date_start:
-                    # El ítem existente empieza en el mismo día o después → eliminarlo
+                # Si el ítem empieza en date_end_prev o después, no se puede poner
+                # date_end <= date_start → eliminarlo directamente.
+                if not item_date_start or item_date_start >= date_end_prev:
                     item.unlink()
                 else:
-                    # Empieza antes → vencerlo el día anterior
                     item.write({"date_end": date_end_prev})
 
             # Nota con el cálculo
@@ -227,6 +227,20 @@ class PurchaseCostReportWizard(models.TransientModel):
                 "date_start": date_start,
                 "date_end": False,
                 "purchase_cost_note": note,
+            })
+
+            # Guardar historial
+            self.env["purchase.cost.price.history"].create({
+                "order_id": self.order_id.id,
+                "pricelist_id": pricelist.id,
+                "product_id": line.product_id.id,
+                "date_applied": date_start,
+                "currency_id": po_currency.id,
+                "pricelist_currency_id": pl_currency.id,
+                "cost_total": line.cost_total,
+                "margin_percent": margin,
+                "final_price": final_price_pl,
+                "note": note,
             })
 
         return {
