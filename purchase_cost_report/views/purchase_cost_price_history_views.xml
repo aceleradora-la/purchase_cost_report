@@ -63,11 +63,5 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- ── Menú bajo Órdenes de Compra ──────────────────────────────── -->
-    <menuitem id="menu_purchase_cost_price_history"
-              name="Historial de Precios de Valuación"
-              parent="purchase.menu_purchase_order"
-              action="action_purchase_cost_price_history"
-              sequence="99"/>
 
 </odoo>

@@ -224,6 +224,11 @@
                             string="Imprimir PDF"
                             class="btn-primary"
                             icon="fa-print"/>
+                    <button name="action_view_price_history"
+                            type="object"
+                            string="Ver Historial"
+                            class="btn-secondary"
+                            icon="fa-history"/>
                     <button name="action_apply_prices"
                             type="object"
                             string="Aplicar Precios"

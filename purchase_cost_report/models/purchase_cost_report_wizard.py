@@ -141,6 +141,19 @@ class PurchaseCostReportWizard(models.TransientModel):
             if not line.margin_percent:
                 line.final_price = line.cost_total * (1.0 + self.margin_percent / 100.0)
 
+    def action_view_price_history(self):
+        """Abre el historial de actualizaciones de precio para esta OC."""
+        self.ensure_one()
+        return {
+            "name": _("Historial de Precios — %s") % self.order_id.name,
+            "type": "ir.actions.act_window",
+            "res_model": "purchase.cost.price.history",
+            "view_mode": "list,form",
+            "domain": [("order_id", "=", self.order_id.id)],
+            "context": {"default_order_id": self.order_id.id},
+            "target": "new",
+        }
+
     def action_print_pdf(self):
         """Imprime el PDF desde el wizard."""
         return (
