@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Agrega el campo "Nota de Valuación" al form de ítems de lista de precios -->
+    <record id="product_pricelist_item_form_cost_note" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form.purchase.cost.note</field>
+        <field name="model">product.pricelist.item</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <field name="purchase_cost_note"
+                       string="Nota de Valuación"
+                       widget="text"
+                       placeholder="Cálculo que originó este precio…"
+                       invisible="not purchase_cost_note"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -178,7 +178,7 @@ class PurchaseCostReportWizard(models.TransientModel):
             else:
                 final_price_pl = line.final_price
 
-            # Vencer ítems vigentes existentes para este producto en esta lista
+            # Vencer o eliminar ítems existentes para este producto en esta lista
             existing = PricelistItem.search([
                 ("pricelist_id", "=", pricelist.id),
                 ("product_id", "=", line.product_id.id),
@@ -187,8 +187,34 @@ class PurchaseCostReportWizard(models.TransientModel):
                     ("date_end", "=", False),
                     ("date_end", ">=", date_start),
             ])
-            if existing:
-                existing.write({"date_end": date_end_prev})
+            for item in existing:
+                if item.date_start and item.date_start >= date_start:
+                    # El ítem existente empieza en el mismo día o después → eliminarlo
+                    item.unlink()
+                else:
+                    # Empieza antes → vencerlo el día anterior
+                    item.write({"date_end": date_end_prev})
+
+            # Nota con el cálculo
+            margin = line.margin_percent if line.margin_percent else self.margin_percent
+            note_parts = [
+                "OC: %s" % self.order_id.name,
+                "Costo total: %s %s" % (
+                    "%.2f" % line.cost_total,
+                    po_currency.name,
+                ),
+                "Margen: %.2f%%" % margin,
+            ]
+            if pl_currency != po_currency:
+                note_parts.append(
+                    "Conversión %s → %s a fecha %s" % (
+                        po_currency.name,
+                        pl_currency.name,
+                        date_start.strftime("%d/%m/%Y"),
+                    )
+                )
+            note_parts.append("Precio final: %.2f %s" % (final_price_pl, pl_currency.name))
+            note = " | ".join(note_parts)
 
             # Crear nuevo ítem
             PricelistItem.create({
@@ -199,6 +225,7 @@ class PurchaseCostReportWizard(models.TransientModel):
                 "fixed_price": final_price_pl,
                 "date_start": date_start,
                 "date_end": False,
+                "purchase_cost_note": note,
             })
 
         return {
