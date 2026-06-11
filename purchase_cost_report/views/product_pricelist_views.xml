@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Lista de ítems de lista de precios con columna de nota de valuación -->
-    <record id="product_pricelist_item_tree_cost_note" model="ir.ui.view">
-        <field name="name">product.pricelist.item.list.purchase.cost.note</field>
+    <!-- ── Form del ítem: nota de valuación + botón historial ─────────── -->
+    <record id="product_pricelist_item_form_cost_note" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form.purchase.cost.note</field>
         <field name="model">product.pricelist.item</field>
-        <field name="inherit_id" ref="product.product_pricelist_item_tree_view"/>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//list" position="inside">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <separator string="Origen del precio" invisible="not purchase_cost_note"/>
                 <field name="purchase_cost_note"
-                       string="Origen del precio"
-                       optional="show"
-                       readonly="1"/>
+                       nolabel="1"
+                       readonly="1"
+                       invisible="not purchase_cost_note"
+                       colspan="2"/>
+                <button name="action_open_cost_history"
+                        type="object"
+                        string="Ver historial completo"
+                        icon="fa-history"
+                        class="btn-link"
+                        invisible="not purchase_cost_note"/>
             </xpath>
         </field>
     </record>
