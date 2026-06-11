@@ -7,8 +7,8 @@
         <field name="model">product.pricelist.item</field>
         <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='currency_id']" position="before">
-                <group invisible="not purchase_cost_note" string="Origen del precio" colspan="2" col="2">
+            <xpath expr="//group[@name='pricelist_rule_base']" position="after">
+                <group invisible="not purchase_cost_note" string="Origen del precio">
                     <field name="purchase_cost_note"
                            nolabel="1"
                            readonly="1"
