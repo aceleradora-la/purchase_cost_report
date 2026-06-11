@@ -7,7 +7,7 @@
         <field name="model">product.pricelist.item</field>
         <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//separator[@string='AJUSTES DE LA EMPRESA']" position="before">
+            <xpath expr="//separator" position="before">
                 <separator string="Origen del precio" invisible="not purchase_cost_note"/>
                 <field name="purchase_cost_note"
                        nolabel="1"
