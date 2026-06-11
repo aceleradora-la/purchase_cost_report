@@ -63,25 +63,11 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- ── Smart button en la lista de precios ──────────────────────── -->
-    <record id="product_pricelist_form_cost_history_button" model="ir.ui.view">
-        <field name="name">product.pricelist.form.purchase.cost.history</field>
-        <field name="model">product.pricelist</field>
-        <field name="inherit_id" ref="product.product_pricelist_form_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button class="oe_stat_button"
-                        icon="fa-history"
-                        type="action"
-                        name="%(action_purchase_cost_price_history)d"
-                        context="{'default_pricelist_id': active_id, 'search_default_pricelist_id': active_id}"
-                        help="Ver historial de precios cargados desde el reporte de valuación">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Historial Valuación</span>
-                    </div>
-                </button>
-            </xpath>
-        </field>
-    </record>
+    <!-- ── Menú bajo Órdenes de Compra ──────────────────────────────── -->
+    <menuitem id="menu_purchase_cost_price_history"
+              name="Historial de Precios de Valuación"
+              parent="purchase.menu_purchase_order"
+              action="action_purchase_cost_price_history"
+              sequence="99"/>
 
 </odoo>
