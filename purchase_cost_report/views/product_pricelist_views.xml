@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- ── Form del ítem: nota de valuación + botón historial ─────────── -->
-    <record id="product_pricelist_item_form_cost_note" model="ir.ui.view">
-        <field name="name">product.pricelist.item.form.purchase.cost.note</field>
-        <field name="model">product.pricelist.item</field>
-        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//group[@name='pricelist_rule_base']" position="after">
-                <group invisible="not purchase_cost_note" string="Origen del precio">
-                    <field name="purchase_cost_note"
-                           nolabel="1"
-                           readonly="1"
-                           colspan="2"/>
-                    <button name="action_open_cost_history"
-                            type="object"
-                            string="Ver historial completo"
-                            icon="fa-history"
-                            class="btn-link"
-                            colspan="2"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
-
+    <!-- No se heredan vistas de product.pricelist.item para evitar conflictos
+         de validación cruzada con otros módulos que también heredan ese form.
+         El historial de precios es accesible desde el botón "Ver Historial"
+         en el wizard de valuación (purchase.cost.report.wizard). -->
 </odoo>
