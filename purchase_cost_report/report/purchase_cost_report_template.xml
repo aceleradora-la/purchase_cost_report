@@ -166,7 +166,12 @@
                                                 <td class="text-end text-muted">
                                                     <t t-esc="formatLang(lc['amount_po'], currency_obj=currency)"/>
                                                 </td>
-                                                <td colspan="2"/>
+                                                <td class="text-end text-muted">
+                                                    <t t-if="line['received_qty']">
+                                                        <t t-esc="formatLang(lc['amount_po'] / line['received_qty'], currency_obj=currency)"/>
+                                                    </t>
+                                                </td>
+                                                <td/>
                                             </tr>
                                         </t>
 
